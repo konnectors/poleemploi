@@ -1,0 +1,80 @@
+{
+  "version": "1.0.0",
+  "name": "Pole Emploi",
+  "type": "konnector",
+  "language": "node",
+  "icon": "icon.svg",
+  "slug": "poleemploi",
+  "source": "git@github.com:konnectors/poleemploi.git",
+  "editor": "Cozy",
+  "vendor_link": "https://www.pole-emploi.fr/accueil/",
+  "categories": ["public_service"],
+  "fields": {
+    "login": {
+      "type": "text"
+    },
+    "password": {
+      "type": "password"
+    },
+    "advancedFields": {
+      "folderPath": {
+        "advanced": true,
+        "isRequired": false
+      }
+    }
+  },
+  "data_types": [
+    "bill"
+  ],
+  "screenshots": [],
+  "permissions": {
+    "bills": {
+      "type": "io.cozy.bills"
+    },
+    "files": {
+      "type": "io.cozy.files"
+    },
+    "accounts": {
+      "type": "io.cozy.accounts"
+    }
+  },
+  "developer": {
+    "name": "Cozy Cloud",
+    "url": "https://cozy.io"
+  },
+  "langs": ["fr", "en"],
+  "locales": {
+    "fr": {
+      "short_description": "Récupère vos correspondances Pôle Emploi",
+      "long_description": "Récupère vos correspondances Pôle Emploi. Aisi que les informations permettant de relier vos allocations aux opérations bancaires correspondantes.",
+      "permissions": {
+        "bills": {
+          "description": "Utilisé pour sauver les données des factures"
+        },
+        "files": {
+          "description": "Utilisé pour sauvegarder les factures"
+        },
+        "accounts": {
+          "description": "Utilisé pour obtenir les données du compte"
+        }
+      }
+    },
+    "en": {
+      "short_description": "Fetches your Pôle Emploi letters",
+      "long_description": "Fetches your Pôle Emploi letters and also information allowing to link your bank operations to your benefits.",
+      "permissions": {
+        "bills": {
+          "description": "Required to save the bills data"
+        },
+        "files": {
+          "description": "Required to save the bills"
+        },
+        "accounts": {
+          "description": "Required to get the account's data"
+        }
+      }
+    }
+  },
+  "banksTransactionRegExp": "\\bpole emploi\\b",
+  "manifest_version": "2"
+}
