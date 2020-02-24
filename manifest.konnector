@@ -23,6 +23,10 @@
       }
     }
   },
+  "time_interval": [
+    0,
+    24
+  ],
   "data_types": [
     "bill"
   ],
@@ -45,8 +49,8 @@
   "langs": ["fr", "en"],
   "locales": {
     "fr": {
-      "short_description": "Récupère vos correspondances Pôle Emploi",
-      "long_description": "Récupère vos correspondances Pôle Emploi. Aisi que les informations permettant de relier vos allocations aux opérations bancaires correspondantes.",
+      "short_description": "Récupère vos correspondances Pôle Emploi et votre dernier avis de situation Pôle Emploi",
+      "long_description": "Récupère vos correspondances Pôle Emploi. Ainsi que les informations permettant de relier vos allocations aux opérations bancaires correspondantes. Votre dernier avis de situation est aussi toujours à jour.",
       "permissions": {
         "bills": {
           "description": "Utilisé pour sauver les données des factures"
