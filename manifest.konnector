@@ -16,6 +16,9 @@
     "password": {
       "type": "password"
     },
+    "zipcode": {
+      "type": "text"
+    },
     "advancedFields": {
       "folderPath": {
         "advanced": true,
@@ -49,6 +52,11 @@
   "langs": ["fr", "en"],
   "locales": {
     "fr": {
+      "fields": {
+        "zipcode": {
+          "label": "Code Postal (optionnel)"
+        }
+      },
       "short_description": "Récupère vos correspondances Pôle Emploi et votre dernier avis de situation Pôle Emploi",
       "long_description": "Récupère vos correspondances Pôle Emploi. Ainsi que les informations permettant de relier vos allocations aux opérations bancaires correspondantes. Votre dernier avis de situation est aussi toujours à jour.",
       "permissions": {
@@ -75,6 +83,11 @@
         },
         "accounts": {
           "description": "Required to get the account's data"
+        }
+      },
+      "fields": {
+        "zipcode": {
+          "label": "Zip code (optional)"
         }
       }
     }
