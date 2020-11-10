@@ -22,8 +22,6 @@ async function start(fields) {
     fileIdAttributes: ['vendorRef']
   })
 
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
-
   const docs = await fetchCourriers()
 
   const filesWithBills = docs.filter(isFileWithBills)
