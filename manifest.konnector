@@ -98,7 +98,10 @@
   },
   "banksTransactionRegExp": "\\bpole emploi\\b",
   "features": [
-    "METADATA_DEDUP"
+    "VENDOR_REF",
+    "BILLS",
+    "LOGIN_OK",
+    "METADATA_DEDUPLICATION"
   ],
   "manifest_version": "2"
 }
