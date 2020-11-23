@@ -14,7 +14,9 @@ const { parse, subYears, format } = require('date-fns')
 module.exports = new BaseKonnector(start)
 
 async function start(fields) {
+  await this.deactivateAutoSuccessfulLogin()
   await authenticate(fields)
+  await this.notifySuccessfulLogin()
 
   const avisSituation = await fetchAvisSituation()
   await this.saveFiles([avisSituation], fields, {
@@ -161,7 +163,6 @@ async function getPage(resp) {
 }
 
 async function authenticate({ login, password, zipcode }) {
-  log('debug', 'authenticating...')
   try {
     const state = {
       state: randomizeString(16),
