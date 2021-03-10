@@ -37,15 +37,15 @@
   },
   "dependencies": {
     "cheerio": "1.0.0-rc.5",
-    "cozy-konnector-libs": "4.40.1",
+    "cozy-konnector-libs": "4.42.0",
     "date-fns": "2.17.0",
     "got": "10.7.0",
     "json-colorizer": "2.2.2",
     "pdfjs-dist": "2.4.456"
   },
   "devDependencies": {
-    "cozy-jobs-cli": "1.15.10",
-    "cozy-konnector-build": "1.1.8",
+    "cozy-jobs-cli": "1.16.0",
+    "cozy-konnector-build": "1.2.0",
     "debug": "4.3.1",
     "pretty": "2.0.0"
   }
