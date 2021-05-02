@@ -9,6 +9,8 @@ const got = firstGot.extend({
 })
 const courrierUrl = 'https://courriers.pole-emploi.fr'
 const candidatUrl = 'https://candidat.pole-emploi.fr'
+const loginUrl = 'https://authentification-candidat.pole-emploi.fr/connexion/json/realms'
+      + '/root/realms/individu/authenticate'
 const { parse, subYears, format } = require('date-fns')
 
 module.exports = new BaseKonnector(start)
@@ -175,7 +177,7 @@ async function authenticate({ login, password, zipcode }) {
           realm: '/individu',
           response_type: 'id_token token',
           scope:
-            'openid idRci profile contexteAuthentification email courrier notifications etatcivil logW individu pilote nomenclature coordonnees navigation reclamation prdvl idIdentiteExterne pole_emploi suggestions actu application_USG_PN073-tdbcandidat_6408B42F17FC872440D4FF01BA6BAB16999CD903772C528808D1E6FA2B585CF2',
+            'openid compteUsager profile contexteAuthentification email courrier notifications etatcivil logW individu pilote nomenclature coordonnees navigation reclamation prdvl idIdentiteExterne pole_emploi suggestions actu application_USG_PN073-tdbcandidat_6408B42F17FC872440D4FF01BA6BAB16999CD903772C528808D1E6FA2B585CF2',
           client_id:
             'USG_PN073-tdbcandidat_6408B42F17FC872440D4FF01BA6BAB16999CD903772C528808D1E6FA2B585CF2',
           ...state
@@ -185,7 +187,7 @@ async function authenticate({ login, password, zipcode }) {
 
     let authBody = await got
       .post(
-        'https://authentification-candidat.pole-emploi.fr/connexion/json/realms/root/realms/individu/authenticate',
+        loginUrl,
         {
           headers: {
             'X-Requested-With': 'XMLHttpRequest'
@@ -198,7 +200,7 @@ async function authenticate({ login, password, zipcode }) {
 
     authBody = await got
       .post(
-        'https://authentification-candidat.pole-emploi.fr/connexion/json/authenticate',
+        loginUrl,
         {
           json: authBody,
           headers: {
@@ -222,7 +224,7 @@ async function authenticate({ login, password, zipcode }) {
     }
     authBody = await got
       .post(
-        'https://authentification-candidat.pole-emploi.fr/connexion/json/authenticate',
+        loginUrl,
         {
           json: authBody,
           headers: {
