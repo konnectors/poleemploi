@@ -26,6 +26,7 @@ async function start(fields) {
     fileIdAttributes: ['vendorRef']
   })
 
+  process.exit(0)
   const docs = await fetchCourriers()
 
   const filesWithBills = docs.filter(isFileWithBills)
