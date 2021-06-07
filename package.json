@@ -41,7 +41,7 @@
     "date-fns": "2.22.1",
     "got": "10.7.0",
     "json-colorizer": "2.2.2",
-    "pdfjs-dist": "2.4.456"
+    "pdfjs-dist": "2.8.335"
   },
   "devDependencies": {
     "cozy-jobs-cli": "1.16.1",
