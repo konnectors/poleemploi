@@ -39,7 +39,7 @@
     "cheerio": "1.0.0-rc.10",
     "cozy-konnector-libs": "4.42.2",
     "date-fns": "2.23.0",
-    "got": "10.7.0",
+    "got": "11.8.2",
     "json-colorizer": "2.2.2",
     "pdfjs-dist": "2.4.456"
   },
