@@ -1,6 +1,6 @@
 process.env.SENTRY_DSN =
   process.env.SENTRY_DSN ||
-  'https://be591cf27cd348eeabc4d56b14bf12ac@sentry.cozycloud.cc/132'
+  'https://0dcf9c03a63f46e98dd1e71743a019a9@errors.cozycloud.cc/18'
 
 const { BaseKonnector, utils, errors, log } = require('cozy-konnector-libs')
 const firstGot = require('../libs/got')
@@ -36,13 +36,25 @@ async function start(fields) {
       fileIdAttributes: ['vendorRef'],
       linkBankOperations: false,
       contentType: 'application/pdf',
-      processPdf: parseAmountAndDate
+      processPdf: parseAmountAndDate,
+      fileAttributes: {
+        metadata: {
+          contentAuthor: 'pole-emploi.fr',
+          carbonCopy: true
+        }
+      }
     })
   }
 
   await this.saveFiles(docs, fields, {
     fileIdAttributes: ['vendorRef'],
-    contentType: 'application/pdf'
+    contentType: 'application/pdf',
+    fileAttributes: {
+      metadata: {
+        contentAuthor: 'pole-emploi.fr',
+        carbonCopy: true
+      }
+    }
   })
 }
 
@@ -75,7 +87,13 @@ async function fetchAvisSituation() {
     filename: `${utils.formatDate(
       new Date()
     )}_polemploi_Dernier avis de situation.pdf`,
-    vendorRef: 'AVIS_DE_SITUATION'
+    vendorRef: 'AVIS_DE_SITUATION',
+    fileAttributes: {
+      metadata: {
+        contentAuthor: 'pole-emploi.fr',
+        carbonCopy: true
+      }
+    }
   }
 }
 
