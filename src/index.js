@@ -173,7 +173,13 @@ async function getPage(resp) {
       filename: `${utils.formatDate(doc.date)}_polemploi_${doc.type}_${
         doc.vendorRef
       }.pdf`,
-      vendor: 'Pole Emploi'
+      vendor: 'Pole Emploi',
+      fileAttributes: {
+        metadata: {
+          contentAuthor: 'pole-emploi.fr',
+          carbonCopy: true
+        }
+      }
     }))
 
   const nextLink =
