@@ -9,8 +9,9 @@ const got = firstGot.extend({
 })
 const courrierUrl = 'https://courriers.pole-emploi.fr'
 const candidatUrl = 'https://candidat.pole-emploi.fr'
-const loginUrl = 'https://authentification-candidat.pole-emploi.fr/connexion/json/realms'
-      + '/root/realms/individu/authenticate'
+const loginUrl =
+  'https://authentification-candidat.pole-emploi.fr/connexion/json/realms' +
+  '/root/realms/individu/authenticate'
 const { parse, subYears, format } = require('date-fns')
 
 module.exports = new BaseKonnector(start)
@@ -26,7 +27,6 @@ async function start(fields) {
     fileIdAttributes: ['vendorRef']
   })
 
-  process.exit(0)
   const docs = await fetchCourriers()
 
   const filesWithBills = docs.filter(isFileWithBills)
@@ -119,8 +119,11 @@ async function fetchCourriers() {
 }
 
 async function getPage(resp) {
-  const fetchFile = async doc =>
-    got.stream(courrierUrl + (await got(doc.url)).$('iframe').attr('src'))
+  const fetchFile = async doc => {
+    const urlPart = await got(doc.url, { decompress: true })
+    const href = urlPart.$(`a[href*='boutontelecharger']`).attr('href')
+    return got.stream(courrierUrl + href)
+  }
   const docs = resp
     .scrape(
       {
@@ -187,28 +190,22 @@ async function authenticate({ login, password, zipcode }) {
     )
 
     let authBody = await got
-      .post(
-        loginUrl,
-        {
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-          }
+      .post(loginUrl, {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
         }
-      )
+      })
       .json()
 
     authBody.callbacks[0].input[0].value = login
 
     authBody = await got
-      .post(
-        loginUrl,
-        {
-          json: authBody,
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-          }
+      .post(loginUrl, {
+        json: authBody,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
         }
-      )
+      })
       .json()
 
     authBody.callbacks[1].input[0].value = password
@@ -224,15 +221,12 @@ async function authenticate({ login, password, zipcode }) {
       zipCodeCb.input[0].value = zipcode
     }
     authBody = await got
-      .post(
-        loginUrl,
-        {
-          json: authBody,
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-          }
+      .post(loginUrl, {
+        json: authBody,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
         }
-      )
+      })
       .json()
 
     await got.defaults.options.cookieJar.setCookie(
