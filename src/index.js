@@ -1,6 +1,6 @@
 process.env.SENTRY_DSN =
   process.env.SENTRY_DSN ||
-  'https://be591cf27cd348eeabc4d56b14bf12ac@sentry.cozycloud.cc/132'
+  'https://0dcf9c03a63f46e98dd1e71743a019a9@errors.cozycloud.cc/18'
 
 const { BaseKonnector, utils, errors, log } = require('cozy-konnector-libs')
 const firstGot = require('../libs/got')
@@ -9,8 +9,9 @@ const got = firstGot.extend({
 })
 const courrierUrl = 'https://courriers.pole-emploi.fr'
 const candidatUrl = 'https://candidat.pole-emploi.fr'
-const loginUrl = 'https://authentification-candidat.pole-emploi.fr/connexion/json/realms'
-      + '/root/realms/individu/authenticate'
+const loginUrl =
+  'https://authentification-candidat.pole-emploi.fr/connexion/json/realms' +
+  '/root/realms/individu/authenticate'
 const { parse, subYears, format } = require('date-fns')
 
 module.exports = new BaseKonnector(start)
@@ -26,7 +27,6 @@ async function start(fields) {
     fileIdAttributes: ['vendorRef']
   })
 
-  process.exit(0)
   const docs = await fetchCourriers()
 
   const filesWithBills = docs.filter(isFileWithBills)
@@ -36,13 +36,25 @@ async function start(fields) {
       fileIdAttributes: ['vendorRef'],
       linkBankOperations: false,
       contentType: 'application/pdf',
-      processPdf: parseAmountAndDate
+      processPdf: parseAmountAndDate,
+      fileAttributes: {
+        metadata: {
+          contentAuthor: 'pole-emploi.fr',
+          carbonCopy: true
+        }
+      }
     })
   }
 
   await this.saveFiles(docs, fields, {
     fileIdAttributes: ['vendorRef'],
-    contentType: 'application/pdf'
+    contentType: 'application/pdf',
+    fileAttributes: {
+      metadata: {
+        contentAuthor: 'pole-emploi.fr',
+        carbonCopy: true
+      }
+    }
   })
 }
 
@@ -75,7 +87,13 @@ async function fetchAvisSituation() {
     filename: `${utils.formatDate(
       new Date()
     )}_polemploi_Dernier avis de situation.pdf`,
-    vendorRef: 'AVIS_DE_SITUATION'
+    vendorRef: 'AVIS_DE_SITUATION',
+    fileAttributes: {
+      metadata: {
+        contentAuthor: 'pole-emploi.fr',
+        carbonCopy: true
+      }
+    }
   }
 }
 
@@ -119,8 +137,11 @@ async function fetchCourriers() {
 }
 
 async function getPage(resp) {
-  const fetchFile = async doc =>
-    got.stream(courrierUrl + (await got(doc.url)).$('iframe').attr('src'))
+  const fetchFile = async doc => {
+    const urlPart = await got(doc.url, { decompress: true })
+    const href = urlPart.$(`a[href*='boutontelecharger']`).attr('href')
+    return got.stream(courrierUrl + href)
+  }
   const docs = resp
     .scrape(
       {
@@ -152,7 +173,13 @@ async function getPage(resp) {
       filename: `${utils.formatDate(doc.date)}_polemploi_${doc.type}_${
         doc.vendorRef
       }.pdf`,
-      vendor: 'Pole Emploi'
+      vendor: 'Pole Emploi',
+      fileAttributes: {
+        metadata: {
+          contentAuthor: 'pole-emploi.fr',
+          carbonCopy: true
+        }
+      }
     }))
 
   const nextLink =
@@ -187,28 +214,22 @@ async function authenticate({ login, password, zipcode }) {
     )
 
     let authBody = await got
-      .post(
-        loginUrl,
-        {
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-          }
+      .post(loginUrl, {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
         }
-      )
+      })
       .json()
 
     authBody.callbacks[0].input[0].value = login
 
     authBody = await got
-      .post(
-        loginUrl,
-        {
-          json: authBody,
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-          }
+      .post(loginUrl, {
+        json: authBody,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
         }
-      )
+      })
       .json()
 
     authBody.callbacks[1].input[0].value = password
@@ -224,15 +245,12 @@ async function authenticate({ login, password, zipcode }) {
       zipCodeCb.input[0].value = zipcode
     }
     authBody = await got
-      .post(
-        loginUrl,
-        {
-          json: authBody,
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-          }
+      .post(loginUrl, {
+        json: authBody,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
         }
-      )
+      })
       .json()
 
     await got.defaults.options.cookieJar.setCookie(
