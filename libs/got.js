@@ -14,7 +14,7 @@ let got = require('got').extend(gotScrape, gotDebug, {
   }
 })
 
-got.getCookieJar = function() {
+got.getCookieJar = function () {
   return cookieJar
 }
 

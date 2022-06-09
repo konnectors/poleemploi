@@ -11,7 +11,7 @@ const gotScrape = require('got').extend({
 
 function addCheerioToResponse(response) {
   Object.defineProperty(response, '$', {
-    get: function() {
+    get: function () {
       if (response._$) return response._$
       return (response._$ = cheerio.load(response.body))
     }
