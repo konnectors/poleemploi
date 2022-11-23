@@ -19,7 +19,8 @@
       "type": "password"
     },
     "zipcode": {
-      "type": "text"
+      "type": "text",
+      "isRequired": "false"
     }
   },
   "folders": [
