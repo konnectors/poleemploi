@@ -2,7 +2,17 @@ process.env.SENTRY_DSN =
   process.env.SENTRY_DSN ||
   'https://0dcf9c03a63f46e98dd1e71743a019a9@errors.cozycloud.cc/18'
 
-const { BaseKonnector, utils, errors, log } = require('cozy-konnector-libs')
+const {
+  BaseKonnector,
+  utils,
+  errors,
+  log,
+  cozyClient
+} = require('cozy-konnector-libs')
+
+const models = cozyClient.new.models
+const { Qualification } = models.document
+
 const firstGot = require('../libs/got')
 const got = firstGot.extend({
   decompress: false
@@ -37,6 +47,7 @@ async function start(fields) {
       linkBankOperations: false,
       contentType: 'application/pdf',
       processPdf: parseAmountAndDate,
+      qualificationLabel: 'unemployment_benefit',
       fileAttributes: {
         metadata: {
           contentAuthor: 'pole-emploi.fr',
@@ -52,7 +63,8 @@ async function start(fields) {
     fileAttributes: {
       metadata: {
         contentAuthor: 'pole-emploi.fr',
-        carbonCopy: true
+        carbonCopy: true,
+        qualification: Qualification.getByLabel('unemployment_benefit')
       }
     }
   })
@@ -173,7 +185,9 @@ async function getPage(resp) {
       fileAttributes: {
         metadata: {
           contentAuthor: 'pole-emploi.fr',
-          carbonCopy: true
+          carbonCopy: true,
+          issueDate: new Date(doc.date),
+          qualification: Qualification.getByLabel('unemployment_benefit')
         }
       }
     }))
