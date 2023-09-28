@@ -160,11 +160,7 @@ async function getPage(resp) {
       {
         date: {
           sel: '.date',
-          parse: date =>
-            date
-              .split('/')
-              .reverse()
-              .join('-')
+          parse: date => date.split('/').reverse().join('-')
         },
         type: '.avisPaie',
         url: {
@@ -325,10 +321,7 @@ function parseAmountAndDate(entry, text) {
   for (let i = 0; i < dateLines.length; i++) {
     const date = parse(dateLines[i].slice(1, 2).pop(), 'dd/MM/yyyy', new Date())
     const amount = parseFloat(
-      amountLines[i]
-        .slice(1, 2)
-        .pop()
-        .replace(',', '.')
+      amountLines[i].slice(1, 2).pop().replace(',', '.')
     )
     if (date && amount) {
       bills.push({ ...entry, date, amount, isRefund: true })
