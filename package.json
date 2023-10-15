@@ -1,6 +1,6 @@
 {
   "name": "cozy-konnector-poleemploi",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -43,7 +43,7 @@
     "pdfjs-dist": "2.12.313"
   },
   "devDependencies": {
-    "cozy-jobs-cli": "2.1.0",
+    "cozy-jobs-cli": "2.1.1",
     "cozy-konnector-build": "1.5.1",
     "debug": "4.3.4",
     "pretty": "2.0.0"
