@@ -108,7 +108,8 @@
   },
   "banksTransactionRegExp": "\\bpole emploi\\b",
   "qualification_labels": [
-    "unemployment_benefit"
+    "unemployment_benefit",
+    "employment_center_certificate"
   ],
   "features": [
     "VENDOR_REF",
