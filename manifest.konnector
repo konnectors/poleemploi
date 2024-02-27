@@ -1,5 +1,5 @@
 {
-  "version": "1.10.1",
+  "version": "1.11.0",
   "name": "France Travail",
   "type": "konnector",
   "language": "node",
@@ -108,7 +108,8 @@
   },
   "banksTransactionRegExp": "\\bpole emploi\\b",
   "qualification_labels": [
-    "unemployment_benefit"
+    "unemployment_benefit",
+    "employment_center_certificate"
   ],
   "features": [
     "VENDOR_REF",
