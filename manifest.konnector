@@ -1,13 +1,13 @@
 {
-  "version": "1.11.0",
-  "name": "Pôle Emploi",
+  "version": "1.10.1",
+  "name": "France Travail",
   "type": "konnector",
   "language": "node",
   "icon": "icon.svg",
   "slug": "poleemploi",
   "source": "git@github.com:konnectors/poleemploi.git",
   "editor": "Cozy",
-  "vendor_link": "https://www.pole-emploi.fr/accueil/",
+  "vendor_link": "https://candidat.francetravail.fr/espacepersonnel/",
   "categories": [
     "public_service"
   ],
@@ -65,8 +65,8 @@
           "label": "Code Postal (optionnel)"
         }
       },
-      "short_description": "Récupère vos correspondances Pôle Emploi et votre dernier avis de situation Pôle Emploi",
-      "long_description": "Pole Emploi est un service public ayant pour mission d'aider au retour à l'emploi et d'indemniser\nles demandeurs d'emploi. Leur site est accessible sur\n[www.pole-emploi.fr](https://www.pole-emploi.fr).\n\n**Connectez votre compte Pole Emploi à votre Cozy pour récupérer**\n\n- Vos correspondances avec Pole Emploi\n- Votre dernier avis de situation toujours à jour\n\n**Accédez directement à vos documents dans votre Drive personnel**\n\nEn connectant votre compte Pole Emploi, votre Cozy crée automatiquement un dossier dans **Drive >\nAdministratif > Pole Emploi**. Vos documents sont à portée de main et toujours accessibles !\n\n**Suivez le montant de vos indemnisations avec Banks**\n\nLes courriers récupérées sont automatiquement liées aux opérations bancaires Pole Emploi associées à votre compte si vous utilisez l’application Banks. Finis les maux de tête à faire les comptes !\n\n**Sauvegardez vos identifiants avec Pass**\n\nEn installant le gestionnaire de mots de passe, vos identifiants sont sauvegardés une bonne fois\npour toutes pour vous faciliter la connexion au site de Pole Emploi. Adieu les mots de passe oubliés !\n\n**Configuration**\n\nPour connecter votre compte, il vous suffit de renseigner dans les champs :\n\n- votre adresse e-mail\n- votre mot de passe\n- dans certains cas, votre code postal (si Pole Emploi vous le demande quand vous vous connectez\n  sur le site)\n\nUne fois connecté, votre Cozy se connectera régulièrement à votre compte Pole Emploi pour récupérer les\nnouveaux éléments et les historiser dans un dossier Pole Emploi dans Drive.\n\nSi vous déconnectez votre compte Pole Emploi, les informations déjà sauvegardées dans votre Cozy restent disponibles. Vous pouvez les supprimer manuellement par ailleurs.",
+      "short_description": "Récupère vos correspondances France Travail et votre dernier avis de situation France Travail",
+      "long_description": "France Travail est un service public ayant pour mission d'aider au retour à l'emploi et d'indemniser\nles demandeurs d'emploi. Leur site est accessible sur\n[www.francetravail.fr/](https://www.francetravail.fr/).\n\n**Connectez votre compte France Travail à votre Cozy pour récupérer**\n\n- Vos correspondances avec France Travail\n- Votre dernier avis de situation toujours à jour\n\n**Accédez directement à vos documents dans votre Drive personnel**\n\nEn connectant votre compte France Travail, votre Cozy crée automatiquement un dossier dans **Drive >\nAdministratif > France Travail**. Vos documents sont à portée de main et toujours accessibles !\n\n**Suivez le montant de vos indemnisations avec Banks**\n\nLes courriers récupérées sont automatiquement liées aux opérations bancaires Travail associées à votre compte si vous utilisez l’application Banks. Finis les maux de tête à faire les comptes !\n\n**Sauvegardez vos identifiants avec Pass**\n\nEn installant le gestionnaire de mots de passe, vos identifiants sont sauvegardés une bonne fois\npour toutes pour vous faciliter la connexion au site de France Travail. Adieu les mots de passe oubliés !\n\n**Configuration**\n\nPour connecter votre compte, il vous suffit de renseigner dans les champs :\n\n- votre adresse e-mail\n- votre mot de passe\n- dans certains cas, votre code postal (si France Travail vous le demande quand vous vous connectez\n  sur le site)\n\nUne fois connecté, votre Cozy se connectera régulièrement à votre compte France Travail pour récupérer les\nnouveaux éléments et les historiser dans un dossier France Travail dans Drive.\n\nSi vous déconnectez votre compte France Travail, les informations déjà sauvegardées dans votre Cozy restent disponibles. Vous pouvez les supprimer manuellement par ailleurs.",
       "permissions": {
         "carboncopy": {
           "description": "Utilisé pour certifier que vos fichiers sont copie conforme avec les documents d'origine"
@@ -83,8 +83,8 @@
       }
     },
     "en": {
-      "short_description": "Fetches your Pôle Emploi letters",
-      "long_description": "Pole Emploi is a French public service.\n\n**Connect your Pole Emploi account to your Cozy for getting**\n\n- your correspondence with Pole Emploi\n- your last situation notice, always updated\n\n**Access directly to your documents in your personal Drive**\n\nBy connecting your Pole Emploi account, your Cozy automatically creates a folder in **Drive > Administrative\nPole Emploi**.\n\n**Follow the amount of your compensations with Banks**\n\nThe recovered correspondence is automatically linked to the Pole Emploi banking transactions associated with your account if you use the Banks application.\n\n**Save your credentials with Pass**\n\nWith Pass, you will never forget a password again as your credentials are automatically saved in by activating the password manager.\n\n**Configuration**\n\nTo connect your account, you just have to fill in the fields :\n- your login (email)\n- your password\n- your zip code is sometimes needed\n\nOnce logged in, your Cozy will automatically connect to your Pole Emploi account to retrieve new items and\nstore them in a Pole Emploi folder in Drive.\n\nIf you disconnect your Pole Emploi account, the information already saved in your Cozy remains available. You can delete them manually elsewhere.",
+      "short_description": "Fetches your France Travail letters",
+      "long_description": "France Travail is a French public service.\n\n**Connect your France Travail account to your Cozy for getting**\n\n- your correspondence with France Travail\n- your last situation notice, always updated\n\n**Access directly to your documents in your personal Drive**\n\nBy connecting your France Travail account, your Cozy automatically creates a folder in **Drive > Administrative\nFrance Travail**.\n\n**Follow the amount of your compensations with Banks**\n\nThe recovered correspondence is automatically linked to the France Travail banking transactions associated with your account if you use the Banks application.\n\n**Save your credentials with Pass**\n\nWith Pass, you will never forget a password again as your credentials are automatically saved in by activating the password manager.\n\n**Configuration**\n\nTo connect your account, you just have to fill in the fields :\n- your login (email)\n- your password\n- your zip code is sometimes needed\n\nOnce logged in, your Cozy will automatically connect to your France Travail account to retrieve new items and\nstore them in a France Travail folder in Drive.\n\nIf you disconnect your France Travail account, the information already saved in your Cozy remains available. You can delete them manually elsewhere.",
       "permissions": {
         "carboncopy": {
           "description": "Required to certify the origin of your files"
