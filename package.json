@@ -39,7 +39,7 @@
     "cozy-konnector-libs": "5.10.1",
     "date-fns": "2.30.0",
     "got": "10.7.0",
-    "json-colorizer": "2.2.2",
+    "json-colorizer": "3.0.1",
     "pdfjs-dist": "2.12.313"
   },
   "devDependencies": {
