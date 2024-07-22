@@ -210,25 +210,11 @@ async function authenticate({ login, password, zipcode }) {
       state: randomizeString(16),
       nonce: randomizeString(16)
     }
-    await got(
-      'https://authentification-candidat.pole-emploi.fr/connexion/oauth2/authorize',
-      {
-        searchParams: {
-          realm: '/individu',
-          response_type: 'id_token token',
-          scope:
-            'openid compteUsager profile contexteAuthentification email courrier notifications etatcivil logW individu pilote nomenclature coordonnees navigation reclamation prdvl idIdentiteExterne pole_emploi suggestions actu application_USG_PN073-tdbcandidat_6408B42F17FC872440D4FF01BA6BAB16999CD903772C528808D1E6FA2B585CF2',
-          client_id:
-            'USG_PN073-tdbcandidat_6408B42F17FC872440D4FF01BA6BAB16999CD903772C528808D1E6FA2B585CF2',
-          ...state
-        }
-      }
-    )
 
     let authBody = await got
       .post(loginUrl, {
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest'
+        searchParams: {
+          goto: `https://authentification-candidat.francetravail.fr/connexion/oauth2/realms/root/realms/individu/authorize?realm=/individu&response_type=id_token token&scope=actu application_USG_PN073-tdbcandidat_6408B42F17FC872440D4FF01BA6BAB16999CD903772C528808D1E6FA2B585CF2 compteUsager contexteAuthentification coordonnees courrier email etatcivil idIdentiteExterne idRci individu logW messagerieintegree navigation nomenclature notifications openid pilote pole_emploi prdvl profile reclamation suggestions mesrdvs&client_id=USG_PN073-tdbcandidat_6408B42F17FC872440D4FF01BA6BAB16999CD903772C528808D1E6FA2B585CF2&state=${state.state}&nonce=${state.nonce}&redirect_uri=https://candidat.pole-emploi.fr/espacepersonnel/`
         }
       })
       .json()
