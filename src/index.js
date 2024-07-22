@@ -17,11 +17,12 @@ const firstGot = require('../libs/got')
 const got = firstGot.extend({
   decompress: false
 })
-const courrierUrl = 'https://courriers.pole-emploi.fr'
-const candidatUrl = 'https://candidat.pole-emploi.fr'
+const courrierUrl = 'https://courriers.francetravail.fr'
+const candidatUrl = 'https://candidat.francetravail.fr'
 const loginUrl =
-  'https://authentification-candidat.pole-emploi.fr/connexion/json/realms' +
+  'https://authentification-candidat.francetravail.fr/connexion/json/realms' +
   '/root/realms/individu/authenticate'
+
 const { parse, subYears, format } = require('date-fns')
 
 module.exports = new BaseKonnector(start)
@@ -50,7 +51,7 @@ async function start(fields) {
       qualificationLabel: 'unemployment_benefit',
       fileAttributes: {
         metadata: {
-          contentAuthor: 'pole-emploi.fr',
+          contentAuthor: 'francetravail.fr',
           carbonCopy: true
         }
       }
@@ -62,7 +63,7 @@ async function start(fields) {
     contentType: 'application/pdf',
     fileAttributes: {
       metadata: {
-        contentAuthor: 'pole-emploi.fr',
+        contentAuthor: 'francetravail.fr',
         carbonCopy: true,
         qualification: Qualification.getByLabel('unemployment_benefit')
       }
@@ -79,7 +80,7 @@ async function fetchAvisSituation() {
     fetchFile: async () => {
       // Mandatory requests to activate the download of Avis_de_situation
       const resp = await got(
-        'https://candidat.pole-emploi.fr/candidat/situationadministrative/suiviinscription/attestation/mesattestations/true'
+        'https://candidat.francetravail.fr/candidat/situationadministrative/suiviinscription/attestation/mesattestations/true'
       )
       await got.post(candidatUrl + resp.$('#Formulaire').attr('action'), {
         form: {
@@ -102,7 +103,7 @@ async function fetchAvisSituation() {
     vendorRef: 'AVIS_DE_SITUATION',
     fileAttributes: {
       metadata: {
-        contentAuthor: 'pole-emploi.fr',
+        contentAuthor: 'francetravail.fr',
         carbonCopy: true,
         qualification: Qualification.getByLabel('employment_center_certificate')
       }
@@ -113,7 +114,7 @@ async function fetchAvisSituation() {
 async function fetchCourriers() {
   try {
     let resp = await got(
-      'https://authentification-candidat.pole-emploi.fr/compte/redirigervers?url=https://courriers.pole-emploi.fr/courriersweb/acces/AccesCourriers'
+      'https://authentification-candidat.francetravail.fr/compte/redirigervers?url=https://courriers.francetravail.fr/courriersweb/acces/AccesCourriers'
     )
 
     resp = await got.post(resp.$('form').attr('action'), {
@@ -185,7 +186,7 @@ async function getPage(resp) {
       vendor: 'Pole Emploi',
       fileAttributes: {
         metadata: {
-          contentAuthor: 'pole-emploi.fr',
+          contentAuthor: 'francetravail.fr',
           carbonCopy: true,
           issueDate: new Date(doc.date),
           qualification: Qualification.getByLabel('unemployment_benefit')
@@ -266,12 +267,12 @@ async function authenticate({ login, password, zipcode }) {
 
     await got.defaults.options.cookieJar.setCookie(
       `idutkes=${authBody.tokenId}`,
-      'https://authentification-candidat.pole-emploi.fr',
+      'https://authentification-candidat.francetravail.fr',
       {}
     )
     await got
       .post(
-        'https://authentification-candidat.pole-emploi.fr/connexion/json/users?_action=idFromSession&realm=/individu',
+        'https://authentification-candidat.francetravail.fr/connexion/json/users?_action=idFromSession&realm=/individu',
         {
           headers: {
             'X-Requested-With': 'XMLHttpRequest'
