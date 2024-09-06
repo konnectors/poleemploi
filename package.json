@@ -45,7 +45,7 @@
   "devDependencies": {
     "cozy-jobs-cli": "2.4.3",
     "cozy-konnector-build": "1.7.0",
-    "debug": "4.3.4",
+    "debug": "4.3.7",
     "pretty": "2.0.0"
   }
 }
