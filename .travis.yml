@@ -1,13 +1,13 @@
 language: node_js
 node_js:
-- '16.20.2'
+- 16.20.2
 env:
   global:
   - MATTERMOST_CHANNEL=publication
-  # REGISTRY_TOKEN(editor=cozy, app=poleemploi)
-  - secure: JtF7YRdCnfQnZlQcjEHO0BcmWKz3zc0Wom2ne2m5YYLkCWVHSP7UpDQsLvYLNSNMNZdKF2Ra33UrCatuzHTdxzy2wVuJk6Oc5wxNt/ltUiwxFNuL/mdFRDntA5dQQqQOEYI0ysWbFXVwSxnuKNvFxIBPZfo/Ldsk73b/g61D6cRGYkh4f43GAKlfCBRUBYqmmAISCieqDyV5nOT6YthXEvLXjPKlOr4wvXDoa5FwxfrbSyzKy5pjlaepzittWqDe/oNQ3JKn6G1w3PW+hhRH5R7tmU3G8Rh1meTjxSBTKPouloo+i+Semu+XMpm/GvoMZr3rgDRT7JQlZCfDM2bpKUOqt5yRclJIHP1xqtcrbMyosypUcInvhG55chlSrroP23NEyJL/gfMATsXryYhmhFxqRGwj5eeTB84c4MJHCNpSQgt8iro9KP94gGx2NlhMpAUiKsC1e4LC10TNqNh7j34/tJgdLsD+Xzh41+hw3Ue3gBJT4LvZRTEiriK+bwwUCJBnoxIg6RxCharL46KcP7iQtOOp6b6xNdwqtB/FgitP8oL1pwEomlQJ1HG3IbchBRcFTMHzovC/kl/Sw45x2H0dsZx2W5dV4QHvdTBe7hGeFyDRZtz0rmA68Mj2PHppEwdZmOH3Z0wTdOfBEoDc5SHl9rI1ZqeuxohMPxJk6K8=
   # MATTERMOST_HOOK_URL
-  - secure: qoihp6lb6FDFPg0knxbpgDj0mzzfw0Uc+uqk09epImVkNgzJQH95RQaAjMYruYuuGwfaSObCkmHzh/Z34YhJqTkinMdjTHcxDIo+aWB4B7lRDl3uzkMbG/paS3G4r7cAFWnnC0CPkYQYBLBJKx6P3bNEUy7I1zKtFaohuvjpExfKr0eiCa4s/PVDWNVxNI12zbwbilg8djcEo/AdvzxGdVxIWbIfkoeC/Uv+26KlmJzrBIBoe7E4SEt5e6eqJclIkwgVE3WwtuGCcG+xjOkJqs5e3UVACOsv7LNpgt0CgD6DK11SknL+ag/on4LJ1suglhmFaxJkglQ6MLeEFYJPCCsH8YGJMLbmPX+2DmV1L5ADITr9UXx1HUs8IMGoLqrQHjdMeKGGdVDIhveySdnD0ByuTNTdFoJfKSud2arZVrudN8XvLs9AU1DaY5SyL3g1PaPDaNklu9EixvufE8Bqh6zIDYoOQqbj9vVjC2a6bCmNzaVNGQoZtTlWx8Com5ZY5fLbip6iI7fzw7cenykLEbeU14KsWUo7XRdHJOY4gpA7WPWWkHaNHxmEVNDCvPUU8FHvq6Ub8OeI3WQ0h6/XTfBubrZumoceaNdPJtYHD0CBo1y41YjrXDlELKtyWjk7uXyFSQ5UHELDj26Tc1t3HDceJ1rN2lfUrl3DWz8jghc=
+  - secure: poqn2/+Bz2WXteWYE8JEvIYeBgkkvYXSdNDOh+O8U1IcCmdWr6vy7Rqk12wP3s1nZzRmDTBbJTFApJVm1wb6UJwckFc8U+PYML16rXXvpfJrzD8u02DbzihNehkQ6ycuEUt+fy91azmrVen7Ic6yEE4OhpoHABGUqNXiGOwrx7fxjHxwHCZONDlCtDxDALjcQhcVY367tGFtJ4K2nTVtPWewK3/sngEDZ/yAmCv51jsBzKk/LOA8oqoDd2qeSfVP9lV+yo+fXT2fO/nO+s2vF6JuDT7avueu7/N8VTC7ANuUfKDBAc4k+I1gZRdZPSuKBRKv8pTzVP7NX3+F7G2mOyE4ChEuqn4hajmYfS2Nu50tYQGn+SSiuSSx9kn3TzjF3+Ri331AH1pIvqF+GQcO3h2X2/QFaaaZo0ZYjI6eTmJRFDjKRWt6Yhp588uMRn9eVI/hEcdXozxt5sH+Arkqr3fCbNRGpEQfc4jgtL1gnl6zS5SMWZAhS+hbGGzsls56dSeixNpBP2W9t6z5zEfn6rE89oX0My3rkEZX7GX2KhViDTf3ofXD+WC5IyOkeUyrC2MvBpg4v2AzLWOqJZw6U5wiNJIeYj/8jtIUxLKv1neudmcq3Svrtg8pqutupf2jKoiy8+v7sVBfbRayBhFw7FR29P+atwq8M1goBk4M5pQ=
+  # REGISTRY_TOKEN slug=orange editor=cozy space=default
+  - secure: Qe1ZWrDJoemkoqQS5JeJYpSRUeVWOFHgaz9RjdgI18mHD70JoWHdCWIhsY1yf9uG9pnWN/gb6G/ANNxDK83tEj/zvVam+KH56QUI1yHeWxrngax9ggyx5S6my1ozYPV5UylhpvYYNzg6lhCVe0aAMTayRzYw8ocRN72gdoFzWOjE/5XYD6lnMOY+XzKv7ag5Ui43kD3Q5AYv5jwEmzSOC/yREmjtT5ssFev3tghgZBYRstUnw9gknj6eAZX8Xmyc8xvn9dVIJfWY7QsE59FKu0Y7vuqlPXq3Pkcy5XesxPJTkhJ2jqfBu2pNk+vRgbd5wqpPx9EwwAORNOSBY92Fq6QmntDxLfSs237IX5JhZMN3zpCCR44BNWF/W1nGt0bIZbbW9ttvL5UzgI6Av/u4F6KM86OayF1JyHPWm82XLlbnnzwyrwUJhCvR2WNhznIFoKIj4yQ8dxQmWNu4xMh0a0yerFBfHteVJx8/dVJFOlXwJ12tB9F5R3xSIR6kEUGYXbL1PSlUvRWEZtxTbuGJySTdaS2X6niZb2OngKgDwi5QwYFIVEB4QTRrXhxjqyqqlL+5P6OWHZ84GRIGHrrUJy0ukd+x8hGjmXSFW609oiWBuB9V0iwfVPPvmbnAClG4RIzRcQXfIHAqGEZyfbX2PIWbymBiUsReY2SyPjxfOgM=
 cache:
   yarn: true
   directories:
@@ -24,7 +24,9 @@ deploy:
   skip-cleanup: true
   script: DEPLOY_BRANCH=build yarn deploy && yarn cozyPublish
   on:
-    branch: master
+    branch:
+    - master
+    - main
 - provider: script
   skip-cleanup: true
   script: DEPLOY_BRANCH=build yarn deploy && yarn cozyPublish --postpublish mattermost
@@ -34,8 +36,8 @@ before_install:
 - openssl aes-256-cbc -K $encrypted_8ebb1ef83f64_key -iv $encrypted_8ebb1ef83f64_iv
   -in github_deploy_key.enc -out /tmp/github_deploy_key -d
 - eval "$(ssh-agent -s)"
-- chmod 600 /tmp/github_deploy_key
-- ssh-add /tmp/github_deploy_key
+- if [[ -f /tmp/github_deploy_key ]]; then chmod 600 /tmp/github_deploy_key; fi
+- if [[ -f /tmp/github_deploy_key ]]; then ssh-add /tmp/github_deploy_key; fi
 after_deploy:
-- rm /tmp/github_deploy_key
+- rm -f /tmp/github_deploy_key
 - ssh-add -D
