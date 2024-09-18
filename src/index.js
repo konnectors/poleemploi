@@ -4,6 +4,8 @@ import {
   RequestInterceptor
 } from 'cozy-clisk/dist/contentscript'
 import Minilog from '@cozy/minilog'
+import { blobToBase64 } from 'cozy-clisk/dist/contentscript/utils'
+import ky from 'ky'
 const log = Minilog('ContentScript')
 Minilog.enable('poleemploiCCC')
 
