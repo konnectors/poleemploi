@@ -123,14 +123,22 @@ class PoleemploiContentScript extends ContentScript {
   async ensureAuthenticated({ account }) {
     this.bridge.addEventListener('workerEvent', this.onWorkerEvent.bind(this))
     this.log('info', '🤖 ensureAuthenticated')
-    if (!account) {
+    const credentials = await this.getCredentials()
+    if (!account || !credentials) {
       await this.ensureNotAuthenticated()
     }
     await this.navigateToLoginForm()
     const authenticated = await this.runInWorker('checkAuthenticated')
     if (!authenticated) {
-      this.log('info', 'Not authenticated')
-      await this.showLoginFormAndWaitForAuthentication()
+      if (credentials) {
+        await this.autoLogin(credentials)
+        await this.runInWorkerUntilTrue({
+          method: 'waitForAuthenticated'
+        })
+      } else {
+        this.log('info', 'Not authenticated')
+        await this.showLoginFormAndWaitForAuthentication()
+      }
     }
     this.unblockWorkerInteractions()
     return true
@@ -166,6 +174,28 @@ class PoleemploiContentScript extends ContentScript {
     this.log('info', '🤖 navigateToLoginForm')
     await this.goto(loginFormUrl)
     await this.waitForElementInWorker('#identifiant')
+  }
+
+  async autoLogin(credentials) {
+    this.log('info', '📍️ autoLogin scredentialstarts')
+    const loginInputSelector = '#identifiant'
+    const passwordInputSelector = '#password'
+    const submitButton = '#submit'
+    await this.waitForElementInWorker(loginInputSelector)
+    this.log('debug', 'Fill login field')
+    await this.runInWorker('fillText', loginInputSelector, credentials.login)
+    await this.runInWorker('click', submitButton)
+
+    this.log('debug', 'Wait for password field')
+    await this.waitForElementInWorker(passwordInputSelector)
+
+    this.log('debug', 'Fill password field')
+    await this.runInWorker(
+      'fillText',
+      passwordInputSelector,
+      credentials.password
+    )
+    await this.runInWorker('click', submitButton)
   }
 
   async checkAuthenticated() {
