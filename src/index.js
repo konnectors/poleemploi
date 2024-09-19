@@ -173,7 +173,7 @@ class PoleemploiContentScript extends ContentScript {
   async navigateToLoginForm() {
     this.log('info', '🤖 navigateToLoginForm')
     await this.goto(loginFormUrl)
-    await this.waitForElementInWorker('#identifiant')
+    await this.waitForElementInWorker('#identifiant, #step1-candidat')
   }
 
   async autoLogin(credentials) {
