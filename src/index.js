@@ -16,9 +16,9 @@ console.groupEnd = function () {}
 
 const requestInterceptor = new RequestInterceptor([
   {
-    identifier: 'userCivilState',
+    identifier: 'userCoordinates',
     method: 'GET',
-    url: '/moyenscontactindividu/etatcivil',
+    url: '/moyenscontactindividu/coordonnees',
     serialization: 'json'
   },
   {
@@ -57,6 +57,8 @@ const attestationsPageUrl =
   'https://candidat.pole-emploi.fr/candidat/situationadministrative/suiviinscription/attestation/mesattestations/true'
 const courriersPageUrl =
   'https://authentification-candidat.pole-emploi.fr/compte/redirigervers?url=https://courriers.pole-emploi.fr/courriersweb/acces/AccesCourriers'
+const coordonneesUrl =
+  'https://candidat.francetravail.fr/informationscontact/coordonnees'
 
 class PoleemploiContentScript extends ContentScript {
   async onWorkerReady() {
@@ -216,8 +218,7 @@ class PoleemploiContentScript extends ContentScript {
       contentType: 'application/pdf',
       qualificationLabel: 'employment_center_certificate'
     })
-    await this.waitForElementInWorker('[pause]')
-    const identity = await this.runInWorker('parseIdentity')
+    const identity = await this.fetchIdentity()
     await this.saveIdentity(identity)
   }
 
@@ -315,6 +316,33 @@ class PoleemploiContentScript extends ContentScript {
     }
     return situationReport
   }
+
+  async fetchIdentity() {
+    this.log('info', '📍️ fetchIdentity starts')
+    await this.goto(coordonneesUrl)
+    await this.waitForElementInWorker('app-label-value')
+    const identity = await this.computeIdentity()
+    return identity
+  }
+
+  async computeIdentity() {
+    this.log('info', '📍️ computeIdentity starts')
+    const infos = this.store.userCoordinates.payload.response
+    const result = { contact: {} }
+    const firstName = infos.prenom
+    const lastName = infos.nom
+
+    result.contact.name = {
+      fullName: `${firstName} ${lastName}`,
+      firstName,
+      lastName
+    }
+    result.contact.address = handleAddress(infos)
+    result.contact.email = [infos.email]
+    // Here we're assuming we will have a max of 2 numbers -mobile and fix-, if we only get one, it is handled in the function
+    result.contact.phone = handlePhones([infos.telephone1, infos.telephone2])
+    return result
+  }
 }
 
 const connector = new PoleemploiContentScript({ requestInterceptor })
@@ -330,4 +358,46 @@ function formatDate(date) {
   const day = String(date.getDate()).padStart(2, '0')
 
   return `${year}-${month}-${day}`
+}
+
+function handlePhones(phones) {
+  const result = []
+  for (const phone of phones) {
+    if (phone !== undefined) {
+      result.push({
+        type:
+          phone.startsWith('06') || phone.startsWith('07') ? 'mobile' : 'home',
+        number: phone
+      })
+    }
+  }
+  return result
+}
+
+function handleAddress(infos) {
+  let adresses = []
+
+  // We can find keys like "adresse4" in the interception
+  // Assuming it goes down to 1 and maybe up to 5 or 6 we need to cover all cases
+  // So we're checking all keys containing "adresse" with a number a format it all in one string
+  for (let key in infos) {
+    // Vérifie si la clé commence par "adresse" et est suivie d'un chiffre
+    if (key.startsWith('adresse') && !isNaN(key.slice(7))) {
+      adresses.push({ key, value: infos[key] })
+    }
+  }
+  adresses.sort((a, b) => parseInt(a.key.slice(7)) - parseInt(b.key.slice(7)))
+
+  const formattedValues = adresses.map(ad => ad.value).join(' ')
+  const postCode = infos.codePostal
+  const city = infos.libelleCommune
+  const country = infos.libellePays
+
+  const foundAddress = {
+    formattedAddress: `${formattedValues}, ${postCode} ${city} ${country}`,
+    postCode,
+    city,
+    country
+  }
+  return [foundAddress]
 }
