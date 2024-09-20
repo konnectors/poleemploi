@@ -9,7 +9,7 @@ import ky from 'ky'
 const log = Minilog('ContentScript')
 Minilog.enable('poleemploiCCC')
 
-// Necessary here because they are using this function and the are not supported by the webview
+// Necessary here because they are using these functions and they are not supported by the webview
 console.group = function () {}
 console.groupCollapsed = function () {}
 console.groupEnd = function () {}
@@ -65,8 +65,8 @@ class PoleemploiContentScript extends ContentScript {
     await this.waitForElementNoReload.bind(this)('#password')
     const submitButton = document.querySelector('#submit')
     // Using classic event won't work properly, as all events only return "isTrusted" value
-    // When submitting the form, the submit button mutate to disable himself and adds a spinner while waiting for the server response
-    // Using this we ensure the user actually submit the loginForm
+    // When submitting the form, the submit button mutates to disable itself and adds a spinner while waiting for the server response
+    // Using this we ensure the user actually submits the loginForm
     if (MutationObserver) {
       const observer = new MutationObserver(mutationsList => {
         for (const mutation of mutationsList) {
@@ -82,6 +82,11 @@ class PoleemploiContentScript extends ContentScript {
         }
       })
       observer.observe(submitButton, { attributes: true })
+    } else {
+      this.log(
+        'warn',
+        'MutationObserver dont exists, credentials cannot be intercepted'
+      )
     }
   }
 
@@ -220,13 +225,30 @@ class PoleemploiContentScript extends ContentScript {
     const credentials = await this.getCredentials()
     const credentialsLogin = credentials?.login
     const storeLogin = this.store?.userCredentials?.login
-    let sourceAccountIdentifier = credentialsLogin || storeLogin
+    let sourceAccountIdentifier
+    let validSAI
+    if (!credentialsLogin && !storeLogin) {
+      this.log('info', 'No credentials found for SAI, getting it from website')
+      validSAI = await this.getSAIFromWebsite()
+    }
+    sourceAccountIdentifier = credentialsLogin || storeLogin || validSAI
     if (!sourceAccountIdentifier) {
       throw new Error('Could not get a sourceAccountIdentifier')
     }
     return {
       sourceAccountIdentifier: sourceAccountIdentifier
     }
+  }
+
+  async getSAIFromWebsite() {
+    this.log('info', '📍️ getSAIFromWebsite starts')
+    await this.clickAndWait(
+      'a[href="/tableaudebord/moncompte"]',
+      '.info-content'
+    )
+    return await this.evaluateInWorker(() => {
+      return document.querySelector('.info-content').textContent
+    })
   }
 
   async fetch(context) {
