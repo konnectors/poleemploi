@@ -5,7 +5,6 @@ import {
 } from 'cozy-clisk/dist/contentscript'
 import Minilog from '@cozy/minilog'
 import { blobToBase64 } from 'cozy-clisk/dist/contentscript/utils'
-import ky from 'ky'
 const log = Minilog('ContentScript')
 Minilog.enable('poleemploiCCC')
 
@@ -33,22 +32,6 @@ requestInterceptor.init()
 const PDF_HEADERS = {
   Accept: 'application/json, text/plain, */*',
   'Content-Type': 'application/pdf'
-}
-const ATTESTATION_HEADERS = {
-  Accept:
-    'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8',
-  'Accept-Encoding': 'gzip, deflate, br, zstd',
-  Referer:
-    'https://candidat.francetravail.fr/candidat/situationadministrative/suiviinscription/attestation/recapitulatif',
-  Host: 'candidat.francetravail.fr',
-  'Accept-Language': 'fr-FR,fr;q=0.8,en-US;q=0.5,en;q=0.3',
-  Connection: 'keep-alive',
-  'Upgrade-Insecure-Requests': 1,
-  'Sec-Fetch-Dest': 'document',
-  'Sec-Fetch-Mode': 'navigate',
-  'Sec-Fetch-Site': 'same-origin',
-  'Sec-Fetch-User': '?1',
-  Priority: 'u=0, i'
 }
 
 // const baseUrl = 'https://www.francetravail.fr/accueil/'
@@ -338,16 +321,10 @@ class PoleemploiContentScript extends ContentScript {
 
   async computeAttestation() {
     this.log('info', '📍️ computeAttestation starts')
-    const blob = await ky
-      .get(
-        'https://candidat.francetravail.fr/candidat/situationadministrative/suiviinscription/attestation/recapitulatif:telechargerattestationpdf',
-        {
-          headers: {
-            ...ATTESTATION_HEADERS
-          }
-        }
-      )
-      .blob()
+    const response = await fetch(
+      'https://candidat.francetravail.fr/candidat/situationadministrative/suiviinscription/attestation/recapitulatif:telechargerattestationpdf'
+    )
+    const blob = await response.blob()
     const dataUri = await blobToBase64(blob)
     const today = new Date()
     const formattedDate = formatDate(today)
