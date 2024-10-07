@@ -5,7 +5,6 @@ import {
 } from 'cozy-clisk/dist/contentscript'
 import Minilog from '@cozy/minilog'
 import { blobToBase64 } from 'cozy-clisk/dist/contentscript/utils'
-import ky from 'ky'
 const log = Minilog('ContentScript')
 Minilog.enable('poleemploiCCC')
 
@@ -30,28 +29,15 @@ const requestInterceptor = new RequestInterceptor([
 ])
 requestInterceptor.init()
 
-const PDF_HEADERS = {
+const NEWVER_PDF_HEADERS = {
   Accept: 'application/json, text/plain, */*',
   'Content-Type': 'application/pdf'
 }
-const ATTESTATION_HEADERS = {
-  Accept:
-    'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8',
-  'Accept-Encoding': 'gzip, deflate, br, zstd',
-  Referer:
-    'https://candidat.francetravail.fr/candidat/situationadministrative/suiviinscription/attestation/recapitulatif',
-  Host: 'candidat.francetravail.fr',
-  'Accept-Language': 'fr-FR,fr;q=0.8,en-US;q=0.5,en;q=0.3',
-  Connection: 'keep-alive',
-  'Upgrade-Insecure-Requests': 1,
-  'Sec-Fetch-Dest': 'document',
-  'Sec-Fetch-Mode': 'navigate',
-  'Sec-Fetch-Site': 'same-origin',
-  'Sec-Fetch-User': '?1',
-  Priority: 'u=0, i'
-}
+// const OLDVER_PDF_HEADERS = {
+//   Accept: '*/*'
+// }
 
-// const baseUrl = 'https://www.francetravail.fr/accueil/'
+const baseUrl = 'https://www.francetravail.fr/accueil/'
 const loginFormUrl = 'https://candidat.francetravail.fr/espacepersonnel/'
 const attestationsPageUrl =
   'https://candidat.pole-emploi.fr/candidat/situationadministrative/suiviinscription/attestation/mesattestations/true'
@@ -204,11 +190,26 @@ class PoleemploiContentScript extends ContentScript {
   }
 
   async checkAuthenticated() {
-    // Logout button does not exists until the menu has been clicked
-    // So to check authentication, we're waiting for all major elements to be completly loaded
-    const notificationsElement = document.querySelector('#notifications')
+    // There is a new version of the application being deployed, gotta handle every case, "app-accueil" being common in both known cases.
+    const appHomeElement = document.querySelector('app-accueil')
+    // Old version used element
     const projectElement = document.querySelector('#step4')
-    return Boolean(notificationsElement && projectElement)
+    // Every accounts may have differents homePage presentation (depending on the user status) so we're checking all of main elements
+    const situationElement = document.querySelector('app-situation')
+    const echangesElement = document.querySelector('app-mes-echanges')
+    const directAccessElement = document.querySelector('app-acces-directs')
+    if (appHomeElement && projectElement) {
+      this.log('info', 'Old version of homePage')
+      return true
+    }
+    if (
+      appHomeElement &&
+      (situationElement || echangesElement || directAccessElement)
+    ) {
+      this.log('info', 'New version of the homePage')
+      return true
+    }
+    return false
   }
 
   async showLoginFormAndWaitForAuthentication() {
@@ -264,6 +265,7 @@ class PoleemploiContentScript extends ContentScript {
       qualificationLabel: 'unemployment_benefit'
     })
     const attestations = await this.fetchAttestations()
+    this.log('info', `attestations : ${JSON.stringify(attestations)}`)
     await this.saveFiles([attestations], {
       context,
       fileIdAttributes: ['vendorRef'],
@@ -277,12 +279,18 @@ class PoleemploiContentScript extends ContentScript {
   async fetchMessages() {
     this.log('info', '📍️ fetchMessages starts')
     await this.goto(courriersPageUrl)
-    await this.waitForElementInWorker('.courriers')
-    const interceptedMessages = this.store.userMessages.payload.response
-    const computedMessages = await this.computeMessages(
-      interceptedMessages.ressources
-    )
-    return computedMessages
+    // We noticed accounts can be presented differently depending on user (precise reason is not clear yet)
+    await this.waitForElementInWorker('.courriers, #boutonLancerRecherche')
+    if (await this.isElementInWorker('.courriers')) {
+      const interceptedMessages = this.store.userMessages.payload.response
+      const computedMessages = await this.computeMessages(
+        interceptedMessages.ressources
+      )
+      return computedMessages
+    } else {
+      const scrapedMessages = await this.fetchMessagesWithScraping()
+      return scrapedMessages
+    }
   }
 
   async computeMessages(messages) {
@@ -314,13 +322,90 @@ class PoleemploiContentScript extends ContentScript {
         requestOptions: {
           headers: {
             Authorization: this.store.token,
-            ...PDF_HEADERS
+            ...NEWVER_PDF_HEADERS
           }
         }
       }
       computedMessages.push(computedMessage)
     }
     return computedMessages
+  }
+
+  async fetchMessagesWithScraping() {
+    this.log('info', '📍️ fetchMessagesWithScraping starts')
+    await this.runInWorker('fillDateForm')
+    await this.clickAndWait('#boutonLancerRecherche', '.listingPyjama')
+    const messages = await this.runInWorker('scrapeMessages')
+    const filesWithDataUri = []
+    for (const message of messages) {
+      const buttonSelector = `a[href*="/courriersweb/mescourriers.bloclistecourriers.boutontelecharger/${message.vendorRef}"]`
+      await this.clickAndWait(buttonSelector, 'embed')
+      const dataUriMessage = this.runInWorker('getFilesDataUri', message)
+      this.log('info', `messages : ${JSON.stringify(dataUriMessage)}`)
+    }
+    return filesWithDataUri
+  }
+
+  async fillDateForm() {
+    this.log('info', '📍️ fillDateForm starts')
+    const startDateElement = document.querySelector('#dateDebut')
+    const formStartDate = startDateElement.value
+    const splittedDate = formStartDate.split('/')
+    const targetStartYear = parseInt(splittedDate[2]) - 10
+    const targetStartDate = `${splittedDate[0]}/${splittedDate[1]}/${targetStartYear}`
+    startDateElement.value = targetStartDate
+  }
+
+  async scrapeMessages() {
+    this.log('info', '📍️ scrapeMessages starts')
+    const computedMessages = []
+    const allMessagesElements = document
+      .querySelector('tbody')
+      .querySelectorAll('tr')
+    for (const messageElement of allMessagesElements) {
+      const date = messageElement.querySelector('.date').textContent
+      const type = messageElement.querySelector('.avisPaie').textContent
+      // href found here is the one for requesting the page that gets redirects, It's only use to get the vendorRef
+      const buttonElement = messageElement.querySelector('.Telechar > a')
+      const buttonHref = buttonElement.getAttribute('href')
+      // This is done to be able to click on the button without triggering a download
+      buttonElement.setAttribute('onclick', '')
+      const vendorRef = buttonHref.split('/').pop()
+      const fileurl = `https://courriers.francetravail.fr/courriersweb/affichagepdf:pdf/false/${vendorRef}`
+      const computedMessage = {
+        buttonHref,
+        date,
+        type,
+        fileurl,
+        vendorRef,
+        filename: `${date}_polemploi_${type}_${vendorRef}.pdf`,
+        vendor: 'Pole Emploi',
+        fileAttributes: {
+          metadata: {
+            contentAuthor: 'pole-emploi.fr',
+            carbonCopy: true,
+            issueDate: new Date(date)
+          }
+        }
+      }
+      computedMessages.push(computedMessage)
+    }
+    return computedMessages
+  }
+
+  async getFilesDataUri(message) {
+    this.log('info', '📍️ getFilesDataUri starts')
+    const response = await fetch(message.fileurl)
+    const blob = await response.blob()
+    const dataUri = await blobToBase64(blob)
+    const fileWithDataUri = {
+      ...message,
+      dataUri
+    }
+    delete fileWithDataUri.fileurl
+    delete fileWithDataUri.buttonHref
+
+    return fileWithDataUri
   }
 
   async fetchAttestations() {
@@ -338,16 +423,10 @@ class PoleemploiContentScript extends ContentScript {
 
   async computeAttestation() {
     this.log('info', '📍️ computeAttestation starts')
-    const blob = await ky
-      .get(
-        'https://candidat.francetravail.fr/candidat/situationadministrative/suiviinscription/attestation/recapitulatif:telechargerattestationpdf',
-        {
-          headers: {
-            ...ATTESTATION_HEADERS
-          }
-        }
-      )
-      .blob()
+    const response = await fetch(
+      'https://candidat.francetravail.fr/candidat/situationadministrative/suiviinscription/attestation/recapitulatif:telechargerattestationpdf'
+    )
+    const blob = await response.blob()
     const dataUri = await blobToBase64(blob)
     const today = new Date()
     const formattedDate = formatDate(today)
@@ -399,7 +478,14 @@ class PoleemploiContentScript extends ContentScript {
 
 const connector = new PoleemploiContentScript({ requestInterceptor })
 connector
-  .init({ additionalExposedMethodsNames: ['computeAttestation'] })
+  .init({
+    additionalExposedMethodsNames: [
+      'computeAttestation',
+      'fillDateForm',
+      'scrapeMessages',
+      'getFilesDataUri'
+    ]
+  })
   .catch(err => {
     log.warn(err)
   })
