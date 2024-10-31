@@ -112,10 +112,10 @@ class PoleemploiContentScript extends ContentScript {
     this.bridge.addEventListener('workerEvent', this.onWorkerEvent.bind(this))
     this.log('info', '🤖 ensureAuthenticated')
     const credentials = await this.getCredentials()
+    await this.navigateToLoginForm()
     if (!account || !credentials) {
       await this.ensureNotAuthenticated()
     }
-    await this.navigateToLoginForm()
     const authenticated = await this.runInWorker('checkAuthenticated')
     if (!authenticated) {
       if (credentials) {
@@ -127,6 +127,9 @@ class PoleemploiContentScript extends ContentScript {
         this.log('info', 'Not authenticated')
         await this.showLoginFormAndWaitForAuthentication()
       }
+    } else {
+      let isOlderVersion = authenticated === 'old'
+      this.store.isOlderVersion = isOlderVersion
     }
     this.unblockWorkerInteractions()
     return true
@@ -134,34 +137,55 @@ class PoleemploiContentScript extends ContentScript {
 
   async ensureNotAuthenticated() {
     this.log('info', '🤖 ensureNotAuthenticated')
-    await this.navigateToLoginForm()
     const authenticated = await this.runInWorker('checkAuthenticated')
+    let isOlderVersion = false
     if (!authenticated) {
       return true
+    } else {
+      let oldVersion = authenticated === 'old'
+      isOlderVersion = oldVersion
     }
-    await this.clickAndWait(
-      '#step1-candidat > div > button',
-      'button[data-target="#PopinDeconnexion"]'
-    )
-    await this.clickAndWait(
-      'button[data-target="#PopinDeconnexion"]',
-      '.modal-footer'
-    )
-    await this.runInWorker('click', 'button[data-target="#PopinDeconnexion"]')
-    await this.waitForElementInWorker('button', {
+
+    let burgerMenu
+    let logoutButton
+    let modalFooter
+    let modalLogoutButton
+    let homePageElement
+
+    if (isOlderVersion) {
+      burgerMenu = '#step1-candidat > div > button'
+      logoutButton = 'button[data-target="#PopinDeconnexion"]'
+      modalFooter = '.modal-footer'
+      modalLogoutButton = 'button'
+      homePageElement = '#keywords-selectized'
+    } else {
+      burgerMenu = '#connection-dropdown-btn'
+      logoutButton = '#disconnection-modal-button'
+      modalFooter = '.modal-footer'
+      modalLogoutButton = '#disconnection-modal-accept-button'
+      homePageElement = '#keywords-selectized'
+    }
+
+    await this.clickAndWait(burgerMenu, logoutButton)
+    await this.clickAndWait(logoutButton, modalFooter)
+    await this.runInWorker('click', logoutButton)
+    await this.waitForElementInWorker(modalLogoutButton, {
       includesText: 'Quitter mon espace'
     })
-    await this.runInWorker('click', 'button', {
+    await this.runInWorker('click', modalLogoutButton, {
       includesText: 'Quitter mon espace'
     })
-    await this.waitForElementInWorker('#keywords-selectized')
+    await this.waitForElementInWorker(homePageElement)
     return true
   }
 
   async navigateToLoginForm() {
     this.log('info', '🤖 navigateToLoginForm')
     await this.goto(loginFormUrl)
-    await this.waitForElementInWorker('#identifiant, #step1-candidat')
+    // step1-candidat is for old website version account, app-situation for new version
+    await this.waitForElementInWorker(
+      '#identifiant, #step1-candidat, app-situation'
+    )
   }
 
   async autoLogin(credentials) {
@@ -191,7 +215,13 @@ class PoleemploiContentScript extends ContentScript {
     // So to check authentication, we're waiting for all major elements to be completly loaded
     const notificationsElement = document.querySelector('#notifications')
     const projectElement = document.querySelector('#step4')
-    return Boolean(notificationsElement && projectElement)
+    const appAccueilElement = document.querySelector('app-accueil')
+    const userNameElement = document.querySelector('.user-identifier')
+    const oldVersionElements = Boolean(notificationsElement && projectElement)
+    const newVersionElements = Boolean(appAccueilElement && userNameElement)
+    if (oldVersionElements) return 'old'
+    if (newVersionElements) return true
+    return false
   }
 
   async showLoginFormAndWaitForAuthentication() {
@@ -260,7 +290,17 @@ class PoleemploiContentScript extends ContentScript {
   async fetchMessages() {
     this.log('info', '📍️ fetchMessages starts')
     await this.goto(courriersPageUrl)
-    await this.waitForElementInWorker('.courriers')
+    // await this.waitForElementInWorker('.courriers, .subtitle')
+    await Promise.race([
+      this.waitForElementInWorker('.courriers'),
+      this.waitForElementInWorker('.subtitle', {
+        includesText: 'aucun courrier'
+      })
+    ])
+    if (!(await this.isElementInWorker('.courriers'))) {
+      this.log('warn', 'No courriers found at all')
+      return []
+    }
     const interceptedMessages = this.store.userMessages.payload.response
     const computedMessages = await this.computeMessages(
       interceptedMessages.ressources
