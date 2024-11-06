@@ -286,7 +286,9 @@ class PoleemploiContentScript extends ContentScript {
       qualificationLabel: 'employment_center_certificate'
     })
     const identity = await this.fetchIdentity()
-    await this.saveIdentity(identity)
+    if (identity) {
+      await this.saveIdentity(identity)
+    }
   }
 
   async fetchMessages() {
@@ -398,7 +400,11 @@ class PoleemploiContentScript extends ContentScript {
 
   async computeIdentity() {
     this.log('info', '📍️ computeIdentity starts')
-    const infos = this.store.userCoordinates.payload.response
+    const infos = this.store.userCoordinates.payload?.response
+    if (!infos) {
+      this.log('warn', 'Identity cannot be fetched on this run')
+      return false
+    }
     const result = { contact: {} }
     const firstName = infos.prenom
     const lastName = infos.nom
