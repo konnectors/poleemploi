@@ -145,38 +145,40 @@ class PoleemploiContentScript extends ContentScript {
       let oldVersion = authenticated === 'old'
       isOlderVersion = oldVersion
     }
+    await this.waitForElementInWorker(
+      'button[data-target="#PopinDeconnexion"], pe-header[isLogged="true"]'
+    )
+    await this.ensureLogout(isOlderVersion)
+    await this.navigateToLoginForm()
+  }
 
-    let burgerMenu
-    let logoutButton
-    let modalFooter
-    let modalLogoutButton
-    let homePageElement
-
-    if (isOlderVersion) {
-      burgerMenu = '#step1-candidat > div > button'
-      logoutButton = 'button[data-target="#PopinDeconnexion"]'
-      modalFooter = '.modal-footer'
-      modalLogoutButton = 'button'
-      homePageElement = '#keywords-selectized'
+  async ensureLogout(isOldVersion) {
+    this.log('info', '📍️ ensureLogout starts')
+    let homePageElement = '#keywords-selectized'
+    if (isOldVersion) {
+      const burgerMenu = '#step1-candidat > div > button'
+      const logoutButton = 'button[data-target="#PopinDeconnexion"]'
+      const modalFooter = '.modal-footer'
+      const modalLogoutButton = 'button'
+      await this.clickAndWait(burgerMenu, logoutButton)
+      await this.clickAndWait(logoutButton, modalFooter)
+      await this.runInWorker('click', logoutButton)
+      await this.waitForElementInWorker(modalLogoutButton, {
+        includesText: 'Quitter mon espace'
+      })
+      await this.runInWorker('click', modalLogoutButton, {
+        includesText: 'Quitter mon espace'
+      })
     } else {
-      burgerMenu = '#connection-dropdown-btn'
-      logoutButton = '#disconnection-modal-button'
-      modalFooter = '.modal-footer'
-      modalLogoutButton = '#disconnection-modal-accept-button'
-      homePageElement = '#keywords-selectized'
+      await this.evaluateInWorker(async () => {
+        // In new website version, they use shadowRoot for the headers
+        document
+          .querySelector('pe-header')
+          .shadowRoot.querySelector('#disconnection-modal-accept-button')
+          .click()
+      })
     }
-
-    await this.clickAndWait(burgerMenu, logoutButton)
-    await this.clickAndWait(logoutButton, modalFooter)
-    await this.runInWorker('click', logoutButton)
-    await this.waitForElementInWorker(modalLogoutButton, {
-      includesText: 'Quitter mon espace'
-    })
-    await this.runInWorker('click', modalLogoutButton, {
-      includesText: 'Quitter mon espace'
-    })
     await this.waitForElementInWorker(homePageElement)
-    return true
   }
 
   async navigateToLoginForm() {
