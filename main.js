@@ -5875,7 +5875,7 @@ class PoleemploiContentScript extends cozy_clisk_dist_contentscript__WEBPACK_IMP
       isOlderVersion = oldVersion
     }
     await this.waitForElementInWorker(
-      'button[data-target="#PopinDeconnexion"], pe-header[isLogged="true"]'
+      'button[data-target="#PopinDeconnexion"], pe-header[isLogged="true"], .btn-account-connected'
     )
     await this.ensureLogout(isOlderVersion)
     await this.navigateToLoginForm()
