@@ -146,7 +146,7 @@ class PoleemploiContentScript extends ContentScript {
       isOlderVersion = oldVersion
     }
     await this.waitForElementInWorker(
-      'button[data-target="#PopinDeconnexion"], pe-header[isLogged="true"]'
+      'button[data-target="#PopinDeconnexion"], pe-header[isLogged="true"], .btn-account-connected'
     )
     await this.ensureLogout(isOlderVersion)
     await this.navigateToLoginForm()
