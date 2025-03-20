@@ -9,9 +9,9 @@ const log = Minilog('ContentScript')
 Minilog.enable('poleemploiCCC')
 
 // Necessary here because they are using these functions and they are not supported by the webview
-console.group = function () {}
-console.groupCollapsed = function () {}
-console.groupEnd = function () {}
+console.group = function () { }
+console.groupCollapsed = function () { }
+console.groupEnd = function () { }
 
 const requestInterceptor = new RequestInterceptor([
   {
@@ -294,17 +294,7 @@ class PoleemploiContentScript extends ContentScript {
   async fetchMessages() {
     this.log('info', '📍️ fetchMessages starts')
     await this.goto(courriersPageUrl)
-    // await this.waitForElementInWorker('.courriers, .subtitle')
-    await Promise.race([
-      this.waitForElementInWorker('.courriers'),
-      this.waitForElementInWorker('.subtitle', {
-        includesText: 'aucun courrier'
-      })
-    ])
-    if (!(await this.isElementInWorker('.courriers'))) {
-      this.log('warn', 'No courriers found at all')
-      return []
-    }
+    await this.waitForRequestInterception('userMessages')
     const interceptedMessages = this.store.userMessages.payload.response
     const computedMessages = await this.computeMessages(
       interceptedMessages.ressources
