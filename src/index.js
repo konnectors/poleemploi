@@ -9,9 +9,9 @@ const log = Minilog('ContentScript')
 Minilog.enable('poleemploiCCC')
 
 // Necessary here because they are using these functions and they are not supported by the webview
-console.group = function () { }
-console.groupCollapsed = function () { }
-console.groupEnd = function () { }
+console.group = function () {}
+console.groupCollapsed = function () {}
+console.groupEnd = function () {}
 
 const requestInterceptor = new RequestInterceptor([
   {
@@ -31,7 +31,8 @@ requestInterceptor.init()
 
 const PDF_HEADERS = {
   Accept: 'application/json, text/plain, */*',
-  'Content-Type': 'application/pdf'
+  'Content-Type': 'application/pdf',
+  typeAuth: '/individu'
 }
 
 // const baseUrl = 'https://www.francetravail.fr/accueil/'
@@ -313,7 +314,6 @@ class PoleemploiContentScript extends ContentScript {
         'https://api.pole-emploi.fr/documents-usager/v2/courriers/'
       const vendorRef = message.idDn
       const fileurl = `${courriersUrl}${vendorRef}`
-
       const computedMessage = {
         date,
         type,
