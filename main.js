@@ -5760,7 +5760,8 @@ requestInterceptor.init()
 
 const PDF_HEADERS = {
   Accept: 'application/json, text/plain, */*',
-  'Content-Type': 'application/pdf'
+  'Content-Type': 'application/pdf',
+  typeAuth: '/individu'
 }
 
 // const baseUrl = 'https://www.francetravail.fr/accueil/'
@@ -6023,17 +6024,7 @@ class PoleemploiContentScript extends cozy_clisk_dist_contentscript__WEBPACK_IMP
   async fetchMessages() {
     this.log('info', '📍️ fetchMessages starts')
     await this.goto(courriersPageUrl)
-    // await this.waitForElementInWorker('.courriers, .subtitle')
-    await Promise.race([
-      this.waitForElementInWorker('.courriers'),
-      this.waitForElementInWorker('.subtitle', {
-        includesText: 'aucun courrier'
-      })
-    ])
-    if (!(await this.isElementInWorker('.courriers'))) {
-      this.log('warn', 'No courriers found at all')
-      return []
-    }
+    await this.waitForRequestInterception('userMessages')
     const interceptedMessages = this.store.userMessages.payload.response
     const computedMessages = await this.computeMessages(
       interceptedMessages.ressources
@@ -6052,7 +6043,6 @@ class PoleemploiContentScript extends cozy_clisk_dist_contentscript__WEBPACK_IMP
         'https://api.pole-emploi.fr/documents-usager/v2/courriers/'
       const vendorRef = message.idDn
       const fileurl = `${courriersUrl}${vendorRef}`
-
       const computedMessage = {
         date,
         type,
